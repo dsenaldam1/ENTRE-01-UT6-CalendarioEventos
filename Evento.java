@@ -2,10 +2,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
+import java.time.DayOfWeek;
 /**
  * Representa a un evento del calendario
- * 
+ * Author David Sena
  */
 public class Evento {
     private String nombre;
@@ -24,11 +24,16 @@ public class Evento {
      */                 
     public Evento(String nombre, String fecha, String horaInicio,
     String horaFin) {
-         
-    }
-
-   
-
+        this.fecha = LocalDate.parse(fecha, formateadorFecha);
+        this.horaInicio = LocalTime.parse(horaInicio, formateadorHora);
+        this.horaFin = LocalTime.parse(horaFin, formateadorHora);
+          String[] cad = nombre.split(" ");
+        this.nombre = "";
+        for (int i = 0; i < cad.length; i++){
+            this.nombre = nombre;
+        }        
+     }
+  
     /**
      * accesor para el nombre del evento
      */
@@ -90,7 +95,8 @@ public class Evento {
      * que se obtendrá a partir de la fecha del evento
      */
     public int getDia() {
-        return 0;
+        DayOfWeek dia = fecha.getDayOfWeek();
+        return dia.getValue();
     }
 
     /**
@@ -98,14 +104,17 @@ public class Evento {
      * que se obtendrá a partir de la fecha del evento
      */
     public Mes getMes() {
-        return null;
+        Mes[] meses = Mes.values();
+        return meses[fecha.getMonthValue() - 1];
     }
 
     /**
      * calcula y devuelve la duración del evento en minutos
      */
     public int getDuracion() {
-        return 0;
+        int minutIni = (horaInicio.getHour() * 60) + horaInicio.getMinute();
+        int minutFin = (horaFin.getHour() * 60) + horaFin.getMinute();
+        return minutFin - minutIni;
 
     }
 
@@ -117,8 +126,9 @@ public class Evento {
      * Pista! usa un objeto LocalDateTime
      */
     public boolean antesDe(Evento otro) {
-        return true;
-
+        LocalDateTime evento = LocalDateTime.of(fecha, horaInicio);
+        LocalDateTime secEvento = LocalDateTime.of(otro.getFecha(), otro.getHoraInicio());
+        return evento.isBefore(secEvento);
     }
 
   

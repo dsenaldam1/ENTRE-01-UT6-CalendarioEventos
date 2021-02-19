@@ -7,7 +7,7 @@ public class IUConsola {
     private static final int EVENTO_MAS_LARGO = 4;
     private static final int CANCELAR_EVENTOS = 5;
     private static final int SALIR = 6;
-
+    private Mes mes;
     private Scanner teclado;
     private CalendarioEventos calendario;
 
