@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Arrays;
+import java.util.Set;
 /**
  * Esta clase modela un sencillo calendario de eventos.
  * 
@@ -41,11 +42,17 @@ public class CalendarioEventos {
      * muy bien usar aquí
      */
     public void addEvento(Evento nuevo) {
+        Mes mes = nuevo.getMes();
+        if(calendario.containsKey(nuevo.getMes())){
+            calendario.put(mes, new ArrayList<Evento>());
+            calendario.get(mes).add(nuevo);
+        }
+        else{
+            ArrayList<Evento> eventos = new ArrayList<>();
+            calendario.put(mes, eventos);
+        }      
          
-
     }
-
-     
 
     /**
      * Representación textual del calendario
@@ -53,8 +60,16 @@ public class CalendarioEventos {
      * Usar el conjunto de entradas  
      */
     public String toString() {
-         
-        return null;
+        Set<Mes> rep = calendario.keySet();
+        StringBuilder sb = new StringBuilder();
+        for(Mes mes: rep){
+            sb.append(mes + "\n");
+            ArrayList<Evento> esc = calendario.get(mes);
+            for(int i = 0; i < esc.size(); i++){
+                sb.append(esc.get(i).toString());
+            }
+        }
+        return sb.toString();       
     }
 
     /**
@@ -62,7 +77,9 @@ public class CalendarioEventos {
      * Si el mes no existe se devuelve 0
      */
     public int totalEventosEnMes(Mes mes) {
-         
+        if (calendario.containsKey(mes)){
+             return calendario.size();
+            }
         return 0;
     }
 
@@ -73,19 +90,36 @@ public class CalendarioEventos {
      *  
      */
     public TreeSet<Mes> mesesConMasEventos() {
-        
-        
-        return null;
+        Set<Mes> masEventos = calendario.keySet();
+        TreeSet<Mes> conjunto = new TreeSet<>();
+        int numEvento = 0;
+        for(Mes mes : masEventos){
+            if(numEvento < calendario.get(mes).size()){
+                numEvento = calendario.get(mes).size();
+                conjunto = new TreeSet<>();
+                conjunto.add(mes);
+            }
+        }
+        return conjunto;
     }
-
     
     /**
      * Devuelve el nombre del evento de mayor duración en todo el calendario
      * Se devuelve uno solo (el primero encontrado) aunque haya varios
      */
     public String eventoMasLargo() {
-        
-        return null;
+        int eventoMayor = 0;
+        String nombre = "";
+        Set<Mes> event = calendario.keySet();
+        for(Mes largo: event){
+            ArrayList<Evento> mayor = calendario.get(event);
+            for(int i = 0; i < mayor.size(); i++){
+                if(mayor.get(i).getDuracion() > eventoMayor){
+                    nombre = mayor.get(i).getNombre();                
+                }
+            }           
+        }
+        return nombre;
     }
 
     /**
@@ -97,10 +131,27 @@ public class CalendarioEventos {
      * Si al borrar de un mes los eventos el mes queda con 0 eventos se borra la entrada
      * completa del map
      */
-    public int cancelarEventos(Mes[] meses, int dia) {
-         
-
-        return 0;
+    public int cancelarEventos(Mes[] meses, int dia) {  
+        int cancelados = 0;
+        for(int i = 0; i < meses.length; i++){
+            if(calendario.containsKey(meses[i])){
+                ArrayList<Evento> eventosDeMes = calendario.get(meses[i]);
+                int aux = eventosDeMes.size();
+                for(int j = 0; j<eventosDeMes.size(); j++ ){
+                    if (eventosDeMes.get(j).getDia() == dia){
+                        calendario.get(meses[i]).remove(j);
+                    }
+                }  
+                cancelados += (aux - eventosDeMes.size());
+                if(calendario.get(meses[i]).size() == 0){
+                    calendario.remove(meses[i]);
+                }
+                else{
+                    calendario.put(meses[i], eventosDeMes);                    
+                }
+            }
+        }
+        return cancelados;
     }
 
     /**
